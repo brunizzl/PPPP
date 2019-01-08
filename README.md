@@ -1,2 +1,0 @@
-# PPPP
-ProzProg ProgrammierProjekt
