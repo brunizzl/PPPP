@@ -1,0 +1,38 @@
+widerstand 	w1 	1 	2 	r= 3
+widerstand 	w2 	2 	3 	
+widerstand 	w3 	3 	4 	r= 0.3
+
+quelle 		v1 	2 	3 	u= 3 i= -2
+quelle 		i1 	1 	4 	i= 7
+
+ende
+
+ende
+Schreibvorschrift:
+
+Eingelesen wird, bis eine zeile mit "ende" beginnt.
+Erlaubte Trennzeichen zwischen den einzelnen Eingaben eines Bauteiles sind tab oder Leerzeichen.
+Als numerische Werte (nicht als Knotenindex) sind auch Kommazahlen und Brüche erlaubt 
+(oder Brüche aus Kommazahlen).
+Brüche werden ohne Leerzeichen eingegeben : -34/5
+
+
+Wiederstände:
+wiederstand "Name" "Nummer Verbindungsknoten 1" "Nummer Verbindungsknoten 2" 
+Beispiel:
+widerstand herbert 2 4
+
+Quellen:
+quelle "Name" "Nummer Verbindungsknoten 1" "Nummer Verbindungsknoten 2"
+Beispiel:
+quelle judith 3 2
+
+
+an Widerständen und Quellen können diese Werte in der selben Zeile ergänzt werden:
+u= "Spannung in Volt"
+i= "Stromstärke in Ampere"
+
+Widerstände können zudem ihren Widerstand eintragen:
+r= "Widerstand in Ohm"
+Beispiel:
+widerstand herbert 2 4 r= 200/43 u= -1.234
