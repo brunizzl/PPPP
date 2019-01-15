@@ -26,10 +26,10 @@ double BruchStrZuDouble(std::string &name) {
 
 std::pair<int, int> dtoB(double wert, int fehler) {
 
-    std::vector<int> kettenbruch;                           ///speichert this->wert als a + 1/(b + 1/(c + 1/(d + 1/...)))     (speichert nur betrag)
-    int counter = 0;                                        ///verhindert, das while()schleife endlos wird
-    double rest = wert;                                     ///buffer zur berechnung der werte von kettenbruch
-    bool negativ = false;                                   ///speichert vorzeichen
+    std::vector<int> kettenbruch;                           //speichert this->wert als a + 1/(b + 1/(c + 1/(d + 1/...)))     (speichert nur betrag)
+    int counter = 0;                                        //verhindert, das while()schleife endlos wird
+    double rest = wert;                                     //buffer zur berechnung der werte von kettenbruch
+    bool negativ = false;                                   //speichert vorzeichen
     if (wert < 0) {
         negativ = true;
         rest *= (-1);
@@ -43,7 +43,7 @@ std::pair<int, int> dtoB(double wert, int fehler) {
         counter ++;
     } while (rest < fehler && counter < 50);
 
-    int zaehler = 1, nenner = 0;                            ///spätere rückgabewerte (initialisierung mag komisch vorkommen, es wird aber fortlaufend der kehrwert genommen.)
+    int zaehler = 1, nenner = 0;                            //spaetere rueckgabewerte (initialisierung mag komisch vorkommen, es wird aber fortlaufend der kehrwert genommen.)
 
     for (int i = kettenbruch.size(); i > 0; i--) {
         nenner += kettenbruch.back() * zaehler;

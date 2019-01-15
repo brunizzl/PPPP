@@ -89,7 +89,7 @@ matrix_elem bauteil::strom(int knoten)
 
 void bauteil::print()
 {
-    std::cout << "Fehler: print nur für allgemeines bauteil aufgerufen" << '\n';
+    std::cout << "Fehler: print nur fuer allgemeines bauteil aufgerufen" << '\n';
 }
 
 
@@ -130,10 +130,10 @@ char widerstand::var_gesucht()
     if (n_known == 3) {
         double delta_ohm = volt / ampere - ohm;
         if (!(delta_ohm < 0.001) || !(delta_ohm > -0.001)) {
-            std::cout << "Warnung: Widerstand " << get_name() << " hat einen falsch eingegeben Wert. für Rechnung wird ohm ignoriert." << '\n';
+            std::cout << "Warnung: Widerstand " << get_name() << " hat einen falsch eingegeben Wert. fï¿½r Rechnung wird ohm ignoriert." << '\n';
             o_known = 0;
         }
-        return '\0';                    ///es wird keine variable mehr gesucht
+        return '\0';                    //es wird keine variable mehr gesucht
     }
     else if (n_known == 2) {
         if (!v_known) {
@@ -141,7 +141,7 @@ char widerstand::var_gesucht()
             return '\0';
         }
         else if (!a_known) {
-            if (ohm != 0) {         ///wenn ohm == 0 muss volt auch == 0 sein, dann ist ampere beliebig.
+            if (ohm != 0) {         //wenn ohm == 0 muss volt auch == 0 sein, dann ist ampere beliebig.
                 set_ampere(volt / ohm);
                 return '\0';
             }
@@ -157,18 +157,18 @@ char widerstand::var_gesucht()
         else {
             set_ohm(volt / ampere);
             return '\0';
-        }                ///dritte variable wurde gerade berechntet -> es wird keine variable mehr gesucht
+        }                //dritte variable wurde gerade berechntet -> es wird keine variable mehr gesucht
     }
     else if (n_known == 1) {
         if (!v_known) {
-            return 'u';             ///volt ist unbekannt -> ampere oder ohm bekannt -> wenn volt per matrix berechnet, kann dritter wert ausgerechnet werden.
+            return 'u';             //volt ist unbekannt -> ampere oder ohm bekannt -> wenn volt per matrix berechnet, kann dritter wert ausgerechnet werden.
         }
         else {
-            return 'i';             ///volt ist bekannt -> ampere und ohm sind unbekannt -> ampere wird per matrix berechntet, ohm per ohmschen gesetz später
+            return 'i';             //volt ist bekannt -> ampere und ohm sind unbekannt -> ampere wird per matrix berechntet, ohm per ohmschen gesetz spï¿½ter
         }
     }
     else {
-        return 'b';                 ///alle drei werte gesucht -> volt und ampere werden berechntet, ohm dann später aus den beiden mit ohmschen gesetz
+        return 'b';                 //alle drei werte gesucht -> volt und ampere werden berechntet, ohm dann spï¿½ter aus den beiden mit ohmschen gesetz
     }
 }
 
@@ -187,23 +187,23 @@ matrix_elem widerstand::spannung(int knoten)
             ausgabe.v_typ = '\0';
             ausgabe.faktor = -volt;
         }
-        else {  /// volt ist unbekannt -> volt steht in matrix (weil es priorität über ampere hat, in matrix geschrieben zu werden(siehe var_gesucht()))
+        else {  // volt ist unbekannt -> volt steht in matrix (weil es prioritt ber ampere hat, in matrix geschrieben zu werden(siehe var_gesucht()))
             ausgabe.v_typ = 'u';
             ausgabe.faktor = 1;
         }
     }
-    else {  ///n_known == 0
+    else {  //n_known == 0
         ausgabe.v_typ = 'u';
         ausgabe.faktor = 1;
     }
 
-    if (knoten == knoten1) {    ///strom fliesst von knoten1 weg -> negativ in knotengleichung von knoten 1
+    if (knoten == knoten1) {    //strom fliesst von knoten1 weg -> negativ in knotengleichung von knoten 1
         ausgabe.faktor *= -1;
     }
     return ausgabe;
 }
 
-///rückgabe char ist ob zahl in ergebnis kommt (wert bekannt -> char == '\0') oder in eine variablenspalte,
+//rï¿½ckgabe char ist ob zahl in ergebnis kommt (wert bekannt -> char == '\0') oder in eine variablenspalte,
 matrix_elem widerstand::strom(int knoten)
 {
     matrix_elem ausgabe;
@@ -214,26 +214,26 @@ matrix_elem widerstand::strom(int knoten)
     else if (n_known == 2) {
         std::cout << "Fehler: matrix muss nach variablen aufgestellt werden (Widerstand " << get_name() << " hat 2 Bekannte)" << '\n';
     }
-    else if (n_known == 1) {            ///bauteil kommt nur ein mal in variablen<> vor
+    else if (n_known == 1) {            //bauteil kommt nur ein mal in variablen<> vor
         if (a_known) {
-            ausgabe.v_typ = '\0';       ///wird in ergebnis geschrieben
-            ausgabe.faktor = -ampere;   ///ergebnis andere seite von gleich -> * -1 rechnen
+            ausgabe.v_typ = '\0';       //wird in ergebnis geschrieben
+            ausgabe.faktor = -ampere;   //ergebnis andere seite von gleich -> * -1 rechnen
         }
-        else if (v_known) {     /// 'i' ist dann in variablen<> eingetragen
+        else if (v_known) {     // 'i' ist dann in variablen<> eingetragen
             ausgabe.v_typ = 'i';
             ausgabe.faktor = 1;
         }
-        else {      ///nur ohm ist bekannt -> 'u' ist in variablen<> eingetragen
+        else {      //nur ohm ist bekannt -> 'u' ist in variablen<> eingetragen
             ausgabe.v_typ = 'u';
             ausgabe.faktor = 1 / ohm;
         }
     }
-    else {          ///n_known == 0 -> 'u' und 'i' sind in variablen<> eingetragen
+    else {          //n_known == 0 -> 'u' und 'i' sind in variablen<> eingetragen
         ausgabe.v_typ = 'i';
         ausgabe.faktor = 1;
     }
 
-    if (knoten == knoten2) {    ///strom fliesst von knoten1 weg -> negativ in knotengleichung von knoten 1
+    if (knoten == knoten2) {    //strom fliesst von knoten1 weg -> negativ in knotengleichung von knoten 1
         ausgabe.faktor *= -1;
     }
     return ausgabe;
@@ -294,7 +294,7 @@ matrix_elem quelle::spannung(int knoten)
         ausgabe.faktor = 1;
     }
 
-    if (knoten == knoten1) {    ///strom fliesst von knoten2 weg -> negativ in knotengleichung von knoten1 (bei quelle ist strom und spannung in unterschiedlichen richtungen)
+    if (knoten == knoten1) {    //strom fliesst von knoten2 weg -> negativ in knotengleichung von knoten1 (bei quelle ist strom und spannung in unterschiedlichen richtungen)
         ausgabe.faktor *= -1;
     }
     return ausgabe;
@@ -312,7 +312,7 @@ matrix_elem quelle::strom(int knoten)
         ausgabe.faktor = 1;
     }
 
-    if (knoten == knoten2) {    ///strom fliesst von knoten2 weg -> negativ in knotengleichung von knoten1
+    if (knoten == knoten2) {    //strom fliesst von knoten2 weg -> negativ in knotengleichung von knoten1
         ausgabe.faktor *= -1;
     }
     return ausgabe;
