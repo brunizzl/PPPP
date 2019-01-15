@@ -457,7 +457,7 @@ void netzwerk::ergebnisausgabe()
                 else {
                     var.v_teil->set_ampere(matrix[zeile][n_variablen]);
                 }
-                var.v_teil->var_gesucht();  //var_gesucht ergaenzt auch werte, die sich direkt mit der bauteilinternen info berechnen lassen.
+                var.v_teil->berechne();  //moegliche noch fehlende variablen werden ausgerechnet
                 zeile++;
             }
             std::cout << '\n' << "Berechnete Werte:" << '\n' << '\n';

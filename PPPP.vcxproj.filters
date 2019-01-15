@@ -27,6 +27,9 @@
     <ClCompile Include="Netzwerk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="bauteil_parameter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bauteil.h">
@@ -39,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bauteil_parameter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

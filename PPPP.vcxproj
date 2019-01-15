@@ -99,12 +99,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="bauteil.cpp" />
+    <ClCompile Include="bauteil_parameter.cpp" />
     <ClCompile Include="doubleBruch.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Netzwerk.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bauteil.h" />
+    <ClInclude Include="bauteil_parameter.h" />
     <ClInclude Include="doubleBruch.h" />
     <ClInclude Include="Netzwerk.h" />
     <ClInclude Include="resources.h" />

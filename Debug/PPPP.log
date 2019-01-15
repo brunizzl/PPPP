@@ -1,8 +1,2 @@
-﻿  bauteil.cpp
-  doubleBruch.cpp
-d:\admin\tuhhonedrive\onedrive - tuhh.de\programmieren\pppp\doublebruch.cpp(39): warning C4244: "Initialisierung": Konvertierung von "double" in "int", möglicher Datenverlust
-  main.cpp
-  Netzwerk.cpp
-d:\admin\tuhhonedrive\onedrive - tuhh.de\programmieren\pppp\netzwerk.cpp(438): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
-  Code wird generiert...
+﻿  bauteil_parameter.cpp
   PPPP.vcxproj -> D:\Admin\tuhhOneDrive\OneDrive - tuhh.de\Programmieren\PPPP\Debug\PPPP.exe
