@@ -31,7 +31,7 @@ void bauteil::set_ampere(double wert)
 double bauteil::get_volt()
 {
     if (!v_known) {
-        std::cout << "Fehler: unknowne Spannung von Bauteil " << get_name() << " wird gelesen" << '\n';
+        std::cout << "Fehler: unbekannte Spannung von Bauteil " << get_name() << " wird gelesen" << '\n';
     }
     return volt;
 }
