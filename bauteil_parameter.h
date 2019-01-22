@@ -25,7 +25,7 @@ public:
 	bauteil_parameter();
 
 	bauteil_parameter operator+ (const bauteil_parameter& summand2);            //definieren rechenregeln 
-	bauteil_parameter operator- (const bauteil_parameter& subtraktor);			//alle strings beginnen mit vorzeichen (auch ggf. plus)
+	bauteil_parameter operator- (const bauteil_parameter& subtraktor);			//alle strings beginnen mit vorzeichen (auch ggf. plus) (gerne optimieren)
 	bauteil_parameter operator* (const bauteil_parameter& faktor2);
 	bauteil_parameter operator/ (const bauteil_parameter& divisor);
 

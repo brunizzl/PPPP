@@ -17,12 +17,44 @@ void bauteil::set_volt(double wert)
     volt = wert;
 }
 
+void bauteil::set_volt(std::string & wert)
+{
+	volt.status = s_bekannt;
+	volt.s_wert = wert;
+}
+
+void bauteil::set_volt_frei()
+{
+	volt.status = freie_var;
+}
+
+bool bauteil::volt_frei()
+{
+	return volt.status == freie_var;
+}
+
 void bauteil::set_ampere(double wert)
 {
     if (!ampere.bekannt()) {
         n_bekannt++;
     }
     ampere = wert;
+}
+
+void bauteil::set_ampere(std::string & wert)
+{
+	ampere.status = s_bekannt;
+	ampere.s_wert = wert;
+}
+
+void bauteil::set_ampere_frei()
+{
+	ampere.status = freie_var;
+}
+
+bool bauteil::ampere_frei()
+{
+	return ampere.status == freie_var;
 }
 
 std::string bauteil::get_name()
@@ -87,6 +119,16 @@ void widerstand::set_ohm(double wert)
     ohm = wert;
 }
 
+void widerstand::set_ohm_frei()
+{
+	ohm.status = freie_var;
+}
+
+bool widerstand::ohm_frei()
+{
+	return ohm.status == freie_var;
+}
+
 char widerstand::var_gesucht()
 {
     if (n_bekannt == 3) {
@@ -99,12 +141,14 @@ char widerstand::var_gesucht()
     }
     else if (n_bekannt == 2) {
         if (!volt.bekannt()) {
-            set_volt(ohm.d_wert * ampere.d_wert);
+            //set_volt(ohm.d_wert * ampere.d_wert);
+			volt = ohm * ampere;
             return '\0';
         }
         else if (!ampere.bekannt()) {
             if (ohm.d_wert != 0) {         //wenn ohm == 0 muss volt auch == 0 sein, dann ist ampere beliebig.
-                set_ampere(volt.d_wert / ohm.d_wert);
+                //set_ampere(volt.d_wert / ohm.d_wert);
+				ampere = volt / ohm;
                 return '\0';
             }
             else {
@@ -117,7 +161,8 @@ char widerstand::var_gesucht()
             }
         }
         else {
-            set_ohm(volt.d_wert / ampere.d_wert);
+            //set_ohm(volt.d_wert / ampere.d_wert);
+			ohm = volt / ampere;
             return '\0';
         }                //dritte variable wurde gerade berechntet -> es wird keine variable mehr gesucht
     }

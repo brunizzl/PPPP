@@ -86,17 +86,33 @@ void netzwerk::build_netzwerk()
 
                 std::string extra_bed;
                 std::string wert;
+				std::string frei("frei");
                 while (str >> extra_bed) {
                     str >> wert;
                     switch (extra_bed[0]) {
                     case 'u':
-                        neu->set_volt(BruchStrZuDouble(wert));
+						if (wert != frei) {
+							neu->set_volt(BruchStrZuDouble(wert));
+						}
+						else {
+							neu->set_volt_frei();
+						}
                         break;
                     case 'i':
-                        neu->set_ampere(BruchStrZuDouble(wert));
+						if (wert != frei) {
+							neu->set_ampere(BruchStrZuDouble(wert));
+						}
+						else {
+							neu->set_ampere_frei();
+						}
                         break;
                     case 'r':
-                        neu->set_ohm(BruchStrZuDouble(wert));
+						if (wert != frei) {
+							neu->set_ohm(BruchStrZuDouble(wert));
+						}
+						else {
+							neu->set_ohm_frei();
+						}
                         break;
                     }
                 }
@@ -117,14 +133,25 @@ void netzwerk::build_netzwerk()
 
                 std::string extra_bed;
                 std::string wert;
+				std::string frei("frei");
                 while (str >> extra_bed) {
                     str >> wert;
                     switch (extra_bed[0]) {
                     case 'u':
-                        neu->set_volt(BruchStrZuDouble(wert));
+						if (wert != frei) {
+							neu->set_volt(BruchStrZuDouble(wert));
+						}
+						else {
+							neu->set_volt_frei();
+						}
                         break;
                     case 'i':
-                        neu->set_ampere(BruchStrZuDouble(wert));
+						if (wert != frei) {
+							neu->set_ampere(BruchStrZuDouble(wert));
+						}
+						else {
+							neu->set_ampere_frei();
+						}
                         break;
                     }
                 }
@@ -143,16 +170,36 @@ void netzwerk::build_matrix()
     for (unsigned int nummer = 0; nummer < bauteile.size(); nummer++) {
         switch (bauteile[nummer]->var_gesucht()) {
         case 'u':
-            variablen.push_back({bauteile[nummer], 'u'}); //vektor mit zu berechnenden variablen wird um neue variable ergaenzt
+			if (bauteile[nummer]->volt_frei()) {
+				variablen.push_back({ bauteile[nummer], 'u' }); //vektor mit zu berechnenden variablen wird um neue variable ergaenzt
+			}
+			else {
+				variablen.insert(variablen.begin(), { bauteile[nummer], 'u' });
+			}
             n_variablen++;
             break;
         case 'i':
-            variablen.push_back({bauteile[nummer], 'i'});
+			if (bauteile[nummer]->ampere_frei()) {
+				variablen.push_back({ bauteile[nummer], 'i' });
+			}
+			else {
+				variablen.insert(variablen.begin(), { bauteile[nummer], 'i' });
+			}
             n_variablen++;
             break;
         case 'b':
-            variablen.push_back({bauteile[nummer], 'u'});
-            variablen.push_back({bauteile[nummer], 'i'});
+			if (bauteile[nummer]->volt_frei()) {
+				variablen.push_back({ bauteile[nummer], 'u' }); //vektor mit zu berechnenden variablen wird um neue variable ergaenzt
+			}
+			else {
+				variablen.insert(variablen.begin(), { bauteile[nummer], 'u' });
+			}
+			if (bauteile[nummer]->ampere_frei()) {
+				variablen.push_back({ bauteile[nummer], 'i' });
+			}
+			else {
+				variablen.insert(variablen.begin(), { bauteile[nummer], 'i' });
+			}
             n_variablen += 2;
             break;
         }
@@ -280,7 +327,7 @@ void netzwerk::draw_matrix()
 {
     std::cout << '\n';
     for (auto it : variablen) {
-        std::cout << it.v_typ << ' ' << it.v_teil->get_name() << '\t';
+        std::cout << it.v_typ << '(' << it.v_teil->get_name() << ')' << '\t';
     }
     std::cout << '\n';
 
@@ -444,8 +491,34 @@ bool netzwerk::ergebnis()
     return true;
 }
 
+std::string netzwerk::ergebnis_ergaenzung(std::string & neue_var, double faktor)
+{
+	std::string rueckgabe;
+	if (faktor == 0) {
+		//nix anhaengen
+	}
+	else if (faktor == 1) {
+		rueckgabe.push_back('+');
+		rueckgabe += neue_var;
+		rueckgabe.push_back(' ');
+	}
+	else if (faktor == -1) {
+		rueckgabe.push_back('-');
+		rueckgabe += neue_var;
+		rueckgabe.push_back(' ');
+	}
+	else {
+		rueckgabe += DoubleZuBruchStr(faktor, true);
+		rueckgabe.push_back('*');
+		rueckgabe += neue_var;
+		rueckgabe.push_back(' ');
+	}
+	return rueckgabe;
+}
+
 void netzwerk::ergebnisausgabe()
 {
+	draw_matrix();
     if (ergebnis()) {
         if (n_variablen == n_pivotelemente) {
             //iteriere ueber alle variablen:
@@ -466,7 +539,71 @@ void netzwerk::ergebnisausgabe()
             }
         }
         else {
-            variablen_werte.resize(n_variablen);
+			//speichern von freien variablen in jeweiligen strings
+			for (int spalte = n_pivotelemente; spalte < n_variablen; spalte++) {
+				variable it = variablen[spalte];
+				if (it.v_typ == 'u') {
+					std::string wert = "U(";
+					wert += it.v_teil->get_name();
+					wert += ')';
+					it.v_teil->set_volt(wert);
+				}
+				else {
+					std::string wert = "I(";
+					wert += it.v_teil->get_name();
+					wert += ')';
+					it.v_teil->set_ampere(wert);
+				}
+			}
+			//speichern der abhängigen variablen in jeweiligen strings (wie in matrixrechner)
+			for (int zeile = 0; zeile < n_pivotelemente; zeile++) {
+				std::string wert;
+				for (int spalte = n_pivotelemente; spalte < n_variablen; spalte++) {
+					std::string neue_var;
+					if (variablen[spalte].v_typ == 'u') {
+						neue_var += "U(";
+						neue_var += variablen[spalte].v_teil->get_name();
+						neue_var += ')';
+					}
+					else {
+						neue_var += "I(";
+						neue_var += variablen[spalte].v_teil->get_name();
+						neue_var += ')';
+					}
+					wert += ergebnis_ergaenzung(neue_var, matrix[zeile][spalte]);
+				}
+				if (wert[0] == '+') {
+					wert[0] = ' ';
+				}
+				//noch probieren variable als double zu bealten, wenn alle freien var == 0 
+				if (variablen[zeile].v_typ == 'u') {
+					if (wert.length() == 0) {
+						variablen[zeile].v_teil->set_volt(matrix[zeile][n_variablen]);
+					}
+					else {						
+						if (matrix[zeile][n_variablen] != 0) {
+							wert += DoubleZuBruchStr(matrix[zeile][n_variablen], true);
+						}
+						variablen[zeile].v_teil->set_volt(wert);
+					}
+				}
+				else {
+					if (wert.length() == 0) {
+						variablen[zeile].v_teil->set_ampere(matrix[zeile][n_variablen]);
+					}
+					else {
+						if (matrix[zeile][n_variablen] != 0) {
+							wert += DoubleZuBruchStr(matrix[zeile][n_variablen], true);
+						}
+						variablen[zeile].v_teil->set_ampere(wert);
+					}
+				}
+			}
+
+			std::cout << '\n' << "Berechnete Werte:" << '\n' << '\n';
+			for (auto teil : bauteile) {
+				teil->print();
+			}
         }
     }
     else {

@@ -34,7 +34,6 @@ private:
 
     std::vector<double*> matrix;                //gleichungssystem zur berechnung unbekannter variablen (pointer auf zeilen)
     std::vector<variable> variablen;            //speichert, wo welche variable im gleichungssystem steht ('u' fuer volt, 'i' fuer ampere) (spaltenbeschriftung)
-    std::vector<std::string> variablen_werte;   //bei freien Var werden hier Ergebnisse eingetragen
     unsigned int n_variablen;                   //ein bauteil kann auch mehrere unbekannte haben -> muss extra gezaehlt werden (matrix breite)
     unsigned int n_pivotelemente;               //gibt an, wie viele variablen berechnet werden koennen (wird nach gaussen auggestellt)
 
@@ -44,11 +43,12 @@ private:
     widerstand *add_widerstand(std::string &name, int knoten1, int knoten2);    //widerstand hat string als name
     quelle *add_quelle(std::string &name, int knoten1, int knoten2);            //quelle hat string als name
 
-    void build_matrix();                                            //baut gleichungssystem zur berechnung inklusive bauen von variablen vektor
-    void finde_maschen(std::list<maschenabschnitt> masche);         //wird in build matrix aufgerufen um rekursiv maschengleichungen aufzustellen (maschen liste zu fuellen)
-    void gauss_matrix();                                            //gausst matrix und rechnet variablen aus
-    void spaltentausch(int spalte1, int spalte2);                   //wird bei berechnung der variablen in gauss_matrix benoetigt
-    bool ergebnis();                                                //ueberprueft ob nullzeilen in matrix ergebnis != 0 haben (wenn nicht -> ergebnis = true)
+    void build_matrix();													//baut gleichungssystem zur berechnung inklusive bauen von variablen vektor
+    void finde_maschen(std::list<maschenabschnitt> masche);					//wird in build matrix aufgerufen um maschengleichungen aufzustellen (maschen liste zu fuellen)
+    void gauss_matrix();													//gausst matrix und rechnet variablen aus
+    void spaltentausch(int spalte1, int spalte2);							//wird bei berechnung der variablen in gauss_matrix benoetigt
+    bool ergebnis();														//ueberprueft ob nullzeilen in matrix ergebnis != 0 haben (wenn nicht -> ergebnis = true)
+	std::string ergebnis_ergaenzung(std::string &neue_var, double faktor);	//baut mit ergebnisstrings
 
 public:
     netzwerk();

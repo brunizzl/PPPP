@@ -34,8 +34,14 @@ public:
     int get_knoten1();          //gibt knoten1 zurueck
     int get_knoten2();          //gibt knoten2 zurueck
 
-    void set_volt(double wert);         //schreibt volt und v_bekannt
-    void set_ampere(double wert);       //schreibt ampere und a_bekannt
+    void set_volt(double wert);         //schreibt volt und volt.status
+	void set_volt(std::string &wert);	//schreibt volt und volt.status
+	void set_volt_frei();				//stellt volt auf status freie var
+	bool volt_frei();					//gibt zurueck, ob status == freie_var
+    void set_ampere(double wert);       //schreibt ampere und ampere.status
+	void set_ampere(std::string &wert);	//schreibt ampere und ampere.status
+	void set_ampere_frei();				//stellt ampere auf status freie var
+	bool ampere_frei();					//gibt zurueck ob apere.status == freie_var
 
     virtual char var_gesucht();                 //gibt 'u' zurueck, wenn volt gesucht, 'i', wenn ampere gesucht und 'b', wenn beides gesucht ist '\0' wenn alles bekannt
 	virtual void berechne();					//berechnet bei wiederstand wenn zwei werte gegeben sind (auch als strings) den dritten
@@ -56,6 +62,8 @@ public:
     ~widerstand();
 
     void set_ohm(double wert);      //schreibt ohm und o_bekannt
+	void set_ohm_frei();			//setzt status von ohm auf freie_var
+	bool ohm_frei();				//gibt ohm.status == freie_var zurueck
 
     char var_gesucht() override;                //gibt 'u' zurueck, wenn volt gesucht, 'i', wenn ampere gesucht und 'b', wenn beides gesucht ist (widerstand kann dann errechnet werden)
 	void berechne() override;					//berechnet fehlenden parameter aus zwei bekannten
