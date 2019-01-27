@@ -1,1 +1,6 @@
-﻿
+﻿  Netzwerk.cpp
+d:\admin\tuhhonedrive\onedrive - tuhh.de\programmieren\pppp\netzwerk.cpp(514): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+d:\admin\tuhhonedrive\onedrive - tuhh.de\programmieren\pppp\netzwerk.cpp(572): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+d:\admin\tuhhonedrive\onedrive - tuhh.de\programmieren\pppp\netzwerk.cpp(588): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+d:\admin\tuhhonedrive\onedrive - tuhh.de\programmieren\pppp\netzwerk.cpp(590): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+  PPPP.vcxproj -> D:\Admin\tuhhOneDrive\OneDrive - tuhh.de\Programmieren\PPPP\Debug\PPPP.exe

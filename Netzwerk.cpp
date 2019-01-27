@@ -333,8 +333,8 @@ void netzwerk::draw_matrix()
 	for (auto it : matrix) {
 		for (unsigned int i = 0; i < n_variablen + 1; i++) {
 			std::stringstream wert;
-			wert << DoubleZuBruchStr(it[i], false);
 			//wert << it[i];
+			wert << DoubleZuBruchStr(it[i], false);
 			if (wert.str().size() > spaltenbreite[i]) {
 				spaltenbreite[i] = wert.str().size();
 			}
@@ -354,15 +354,15 @@ void netzwerk::draw_matrix()
     for (auto it : matrix) {
         for (unsigned int i = 0; i < n_variablen; i++) {
 			std::stringstream wert;
-			wert << DoubleZuBruchStr(it[i], false);
 			//wert << it[i];
+			wert << DoubleZuBruchStr(it[i], false);
 			std::cout << wert.str();
 			for (unsigned int k = wert.str().size(); k <= spaltenbreite[i]; k++) {
 				std::cout << ' ';
 			}
         }
-        std::cout << "| " << DoubleZuBruchStr(it[n_variablen], false) << '\n';
 		//std::cout << "| " << it[n_variablen] << '\n';
+        std::cout << "| " << DoubleZuBruchStr(it[n_variablen], false) << '\n';
     }
     std::cout << '\n';
 	delete[] spaltenbreite;
@@ -382,9 +382,11 @@ void netzwerk::gauss_matrix()
     for (unsigned int ref_zeile = 0, ref_spalte = 0; ref_zeile < kurze_seite; ref_zeile++, ref_spalte++) {
         //Bestimme erste Zeile mit Wert in ref_spalte != 0
         unsigned int groesstes_pivot_zeile;
+		double pivot_wert = 0;
         bool pivot = false;
 		for (unsigned int test_zeile = ref_zeile; test_zeile < matrix.size(); test_zeile++) {
-			if (matrix[test_zeile][ref_spalte] != 0) {
+			if (abs(matrix[test_zeile][ref_spalte]) > pivot_wert) {
+				pivot_wert = abs(matrix[test_zeile][ref_spalte]);
 				groesstes_pivot_zeile = test_zeile;
 				pivot = true;
 			}
@@ -430,7 +432,7 @@ void netzwerk::gauss_matrix()
     }
     for (unsigned int zeile = 0; zeile < n_variablen && zeile < matrix.size(); zeile++) {
         unsigned int spalte = 0;
-        while (matrix[zeile][spalte] == 0) {
+        while (abs(matrix[zeile][spalte]) < 1e-15) {		//absicherung gegen rundungsfehler
             spalte++;
         }
         if (spalte < n_variablen) {
@@ -489,7 +491,7 @@ void netzwerk::gauss_matrix()
             }
         }
     }
-    //draw_matrix();
+    draw_matrix();
 
     return;
 }
