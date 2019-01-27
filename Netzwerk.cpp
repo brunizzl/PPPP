@@ -90,7 +90,7 @@ void netzwerk::build_netzwerk()
                 while (str >> extra_bed) {
                     str >> wert;
                     switch (extra_bed[0]) {
-                    case 'U':
+                    case 'u':
 						if (wert != frei) {
 							neu->set_volt(BruchStrZuDouble(wert));
 						}
@@ -98,7 +98,7 @@ void netzwerk::build_netzwerk()
 							neu->set_volt_frei();
 						}
                         break;
-                    case 'I':
+                    case 'i':
 						if (wert != frei) {
 							neu->set_ampere(BruchStrZuDouble(wert));
 						}
@@ -137,7 +137,7 @@ void netzwerk::build_netzwerk()
                 while (str >> extra_bed) {
                     str >> wert;
                     switch (extra_bed[0]) {
-                    case 'U':
+                    case 'u':
 						if (wert != frei) {
 							neu->set_volt(BruchStrZuDouble(wert));
 						}
@@ -145,7 +145,7 @@ void netzwerk::build_netzwerk()
 							neu->set_volt_frei();
 						}
                         break;
-                    case 'I':
+                    case 'i':
 						if (wert != frei) {
 							neu->set_ampere(BruchStrZuDouble(wert));
 						}
@@ -491,7 +491,7 @@ void netzwerk::gauss_matrix()
             }
         }
     }
-    draw_matrix();
+    //draw_matrix();
 
     return;
 }
