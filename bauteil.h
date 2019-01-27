@@ -43,10 +43,10 @@ public:
 	void set_ampere_frei();				//stellt ampere auf status freie var
 	bool ampere_frei();					//gibt zurueck ob apere.status == freie_var
 
-    virtual char var_gesucht();                 //gibt 'u' zurueck, wenn volt gesucht, 'i', wenn ampere gesucht und 'b', wenn beides gesucht ist '\0' wenn alles bekannt
+    virtual char var_gesucht();                 //gibt 'U' zurueck, wenn volt gesucht, 'I', wenn ampere gesucht und 'b', wenn beides gesucht ist '\0' wenn alles bekannt
 	virtual void berechne();					//berechnet bei wiederstand wenn zwei werte gegeben sind (auch als strings) den dritten
     virtual matrix_elem spannung(int knoten);   //gibt wert fuer maschengleichung (matrix) zurueck. char gibt an an welche stelle in variablen<> geschrieben werden soll
-    virtual matrix_elem strom(int knoten);      //analog zu spannung nur fuer knotengleichungen char ist '\0': ergebnis, 'i': <'i', aktuelles bauteil*>, 'u': <'u', aktuelles bauteil*>
+    virtual matrix_elem strom(int knoten);      //analog zu spannung nur fuer knotengleichungen char ist '\0': ergebnis, 'I': <'I', aktuelles bauteil*>, 'U': <'U', aktuelles bauteil*>
 
     virtual void print();
 };
@@ -65,10 +65,10 @@ public:
 	void set_ohm_frei();			//setzt status von ohm auf freie_var
 	bool ohm_frei();				//gibt ohm.status == freie_var zurueck
 
-    char var_gesucht() override;                //gibt 'u' zurueck, wenn volt gesucht, 'i', wenn ampere gesucht und 'b', wenn beides gesucht ist (widerstand kann dann errechnet werden)
+    char var_gesucht() override;                //gibt 'U' zurueck, wenn volt gesucht, 'I', wenn ampere gesucht und 'b', wenn beides gesucht ist (widerstand kann dann errechnet werden)
 	void berechne() override;					//berechnet fehlenden parameter aus zwei bekannten
     matrix_elem spannung(int knoten) override;  //gibt wert fuer maschengleichung (matrix) zurueck. char gibt an an welche stelle in variablen<> geschrieben werden soll
-    matrix_elem strom(int knoten) override;     //analog zu spannung nur fuer knotengleichungen char ist '\0': ergebnis, 'i': <'i', aktuelles bauteil*>, 'u': <'u', aktuelles bauteil*>
+    matrix_elem strom(int knoten) override;     //analog zu spannung nur fuer knotengleichungen char ist '\0': ergebnis, 'I': <'I', aktuelles bauteil*>, 'U': <'U', aktuelles bauteil*>
 
     void print() override;
 };
@@ -85,7 +85,7 @@ public:
 
     char var_gesucht() override;
     matrix_elem spannung(int knoten) override;  //gibt wert fuer maschengleichung (matrix) zurueck. char gibt an an welche stelle in variablen<> geschrieben werden soll
-    matrix_elem strom(int knoten) override;     //analog zu spannung nur fuer knotengleichungen char ist '\0': ergebnis, 'i': <'i', aktuelles bauteil*>, 'u': <'u', aktuelles bauteil*>
+    matrix_elem strom(int knoten) override;     //analog zu spannung nur fuer knotengleichungen char ist '\0': ergebnis, 'I': <'I', aktuelles bauteil*>, 'U': <'U', aktuelles bauteil*>
 
     void print() override;
 };

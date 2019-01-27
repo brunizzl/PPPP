@@ -17,6 +17,8 @@ struct variable
 {
     bauteil *v_teil;
     char v_typ;
+
+	std::string tostring();
 };
 
 
@@ -33,7 +35,7 @@ private:
     std::vector<bauteil *> bauteile;                                //speichert bauteile
 
     std::vector<double*> matrix;                //gleichungssystem zur berechnung unbekannter variablen (pointer auf zeilen)
-    std::vector<variable> variablen;            //speichert, wo welche variable im gleichungssystem steht ('u' fuer volt, 'i' fuer ampere) (spaltenbeschriftung)
+    std::vector<variable> variablen;            //speichert, wo welche variable im gleichungssystem steht ('U' fuer volt, 'I' fuer ampere) (spaltenbeschriftung)
     unsigned int n_variablen;                   //ein bauteil kann auch mehrere unbekannte haben -> muss extra gezaehlt werden (matrix breite)
     unsigned int n_pivotelemente;               //gibt an, wie viele variablen berechnet werden koennen (wird nach gaussen auggestellt)
 
@@ -58,7 +60,7 @@ public:
     void berechne_netzwerk();   //macht den ganzen matrixdreck
 
     void draw_matrix();         //debuggingfunktion, die matrix darstellt
-    void ergebnisausgabe();     //listet alle bauteile mit jetzt bekannten werten auf
+	void ergebnisausgabe();     //listet alle bauteile mit jetzt bekannten werten auf
 };
 
 #endif // netzwerk_H

@@ -19,8 +19,10 @@ void bauteil::set_volt(double wert)
 
 void bauteil::set_volt(std::string & wert)
 {
-	volt.status = s_bekannt;
-	volt.s_wert = wert;
+	if (!volt.bekannt()) {
+		n_bekannt++;
+	}
+	volt = wert;
 }
 
 void bauteil::set_volt_frei()
@@ -43,8 +45,10 @@ void bauteil::set_ampere(double wert)
 
 void bauteil::set_ampere(std::string & wert)
 {
-	ampere.status = s_bekannt;
-	ampere.s_wert = wert;
+	if (!ampere.bekannt()) {
+		n_bekannt++;
+	}
+	ampere = wert;
 }
 
 void bauteil::set_ampere_frei()
@@ -80,7 +84,7 @@ char bauteil::var_gesucht()
 
 void bauteil::berechne()
 {
-	//allgemeines bauteil kann nicht bauteil_parameter auseinader berrechen
+	//allgemeines bauteil kann nicht bauteil_parameter auseinader berrechnen
 	return;
 }
 
@@ -157,7 +161,7 @@ char widerstand::var_gesucht()
                     n_bekannt--;
                     volt.status = unbekannt;
                 }
-                return 'i';
+                return 'I';
             }
         }
         else {
@@ -168,10 +172,10 @@ char widerstand::var_gesucht()
     }
     else if (n_bekannt == 1) {
         if (!volt.bekannt()) {
-            return 'u';             //volt ist unbekannt -> ampere oder ohm bekannt -> wenn volt per matrix berechnet, kann dritter wert ausgerechnet werden.
+            return 'U';             //volt ist unbekannt -> ampere oder ohm bekannt -> wenn volt per matrix berechnet, kann dritter wert ausgerechnet werden.
         }
         else {
-            return 'i';             //volt ist bekannt -> ampere und ohm sind unbekannt -> ampere wird per matrix berechntet, ohm per ohmschen gesetz spaeter
+            return 'I';             //volt ist bekannt -> ampere und ohm sind unbekannt -> ampere wird per matrix berechntet, ohm per ohmschen gesetz spaeter
         }
     }
     else {
@@ -210,12 +214,12 @@ matrix_elem widerstand::spannung(int knoten)
             ausgabe.faktor = -volt.d_wert;
         }
         else {  // volt ist unbekannt -> volt steht in matrix (weil es prioritaet ueber ampere hat, in matrix geschrieben zu werden(siehe var_gesucht()))
-            ausgabe.v_typ = 'u';
+            ausgabe.v_typ = 'U';
             ausgabe.faktor = 1;
         }
     }
     else {  //n_bekannt == 0
-        ausgabe.v_typ = 'u';
+        ausgabe.v_typ = 'U';
         ausgabe.faktor = 1;
     }
 
@@ -241,17 +245,17 @@ matrix_elem widerstand::strom(int knoten)
             ausgabe.v_typ = '\0';				//wird in ergebnis geschrieben
             ausgabe.faktor = -ampere.d_wert;    //ergebnis andere seite von gleich -> * -1 rechnen
         }
-        else if (volt.bekannt()) {		// 'i' ist dann in variablen<> eingetragen
-            ausgabe.v_typ = 'i';
+        else if (volt.bekannt()) {		// 'I' ist dann in variablen<> eingetragen
+            ausgabe.v_typ = 'I';
             ausgabe.faktor = 1;
         }
-        else {      //nur ohm ist bekannt -> 'u' ist in variablen<> eingetragen
-            ausgabe.v_typ = 'u';
+        else {      //nur ohm ist bekannt -> 'U' ist in variablen<> eingetragen
+            ausgabe.v_typ = 'U';
             ausgabe.faktor = 1 / ohm.d_wert;
         }
     }
-    else {          //n_bekannt == 0 -> 'u' und 'i' sind in variablen<> eingetragen
-        ausgabe.v_typ = 'i';
+    else {          //n_bekannt == 0 -> 'U' und 'I' sind in variablen<> eingetragen
+        ausgabe.v_typ = 'I';
         ausgabe.faktor = 1;
     }
 
@@ -303,10 +307,10 @@ char quelle::var_gesucht()
         return 'b';
     }
     else if (!volt.bekannt()) {
-        return 'u';
+        return 'U';
     }
     else if (!ampere.bekannt()) {
-        return 'i';
+        return 'I';
     }
     else {
         return '\0';
@@ -321,7 +325,7 @@ matrix_elem quelle::spannung(int knoten)
         ausgabe.faktor = -volt.d_wert;
     }
     else {
-        ausgabe.v_typ = 'u';
+        ausgabe.v_typ = 'U';
         ausgabe.faktor = 1;
     }
 
@@ -339,7 +343,7 @@ matrix_elem quelle::strom(int knoten)
         ausgabe.faktor = -ampere.d_wert;
     }
     else {
-        ausgabe.v_typ = 'i';
+        ausgabe.v_typ = 'I';
         ausgabe.faktor = 1;
     }
 

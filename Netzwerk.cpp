@@ -90,7 +90,7 @@ void netzwerk::build_netzwerk()
                 while (str >> extra_bed) {
                     str >> wert;
                     switch (extra_bed[0]) {
-                    case 'u':
+                    case 'U':
 						if (wert != frei) {
 							neu->set_volt(BruchStrZuDouble(wert));
 						}
@@ -98,7 +98,7 @@ void netzwerk::build_netzwerk()
 							neu->set_volt_frei();
 						}
                         break;
-                    case 'i':
+                    case 'I':
 						if (wert != frei) {
 							neu->set_ampere(BruchStrZuDouble(wert));
 						}
@@ -137,7 +137,7 @@ void netzwerk::build_netzwerk()
                 while (str >> extra_bed) {
                     str >> wert;
                     switch (extra_bed[0]) {
-                    case 'u':
+                    case 'U':
 						if (wert != frei) {
 							neu->set_volt(BruchStrZuDouble(wert));
 						}
@@ -145,7 +145,7 @@ void netzwerk::build_netzwerk()
 							neu->set_volt_frei();
 						}
                         break;
-                    case 'i':
+                    case 'I':
 						if (wert != frei) {
 							neu->set_ampere(BruchStrZuDouble(wert));
 						}
@@ -169,36 +169,36 @@ void netzwerk::build_matrix()
     //baue variblen vektor (quasi spaltenbeschriftung der matrix)
     for (unsigned int nummer = 0; nummer < bauteile.size(); nummer++) {
         switch (bauteile[nummer]->var_gesucht()) {
-        case 'u':
+        case 'U':
 			if (bauteile[nummer]->volt_frei()) {
-				variablen.push_back({ bauteile[nummer], 'u' }); //vektor mit zu berechnenden variablen wird um neue variable ergaenzt
+				variablen.push_back({ bauteile[nummer], 'U' }); //vektor mit zu berechnenden variablen wird um neue variable ergaenzt
 			}
 			else {
-				variablen.insert(variablen.begin(), { bauteile[nummer], 'u' });
+				variablen.insert(variablen.begin(), { bauteile[nummer], 'U' });
 			}
             n_variablen++;
             break;
-        case 'i':
+        case 'I':
 			if (bauteile[nummer]->ampere_frei()) {
-				variablen.push_back({ bauteile[nummer], 'i' });
+				variablen.push_back({ bauteile[nummer], 'I' });
 			}
 			else {
-				variablen.insert(variablen.begin(), { bauteile[nummer], 'i' });
+				variablen.insert(variablen.begin(), { bauteile[nummer], 'I' });
 			}
             n_variablen++;
             break;
         case 'b':
 			if (bauteile[nummer]->volt_frei()) {
-				variablen.push_back({ bauteile[nummer], 'u' }); //vektor mit zu berechnenden variablen wird um neue variable ergaenzt
+				variablen.push_back({ bauteile[nummer], 'U' }); //vektor mit zu berechnenden variablen wird um neue variable ergaenzt
 			}
 			else {
-				variablen.insert(variablen.begin(), { bauteile[nummer], 'u' });
+				variablen.insert(variablen.begin(), { bauteile[nummer], 'U' });
 			}
 			if (bauteile[nummer]->ampere_frei()) {
-				variablen.push_back({ bauteile[nummer], 'i' });
+				variablen.push_back({ bauteile[nummer], 'I' });
 			}
 			else {
-				variablen.insert(variablen.begin(), { bauteile[nummer], 'i' });
+				variablen.insert(variablen.begin(), { bauteile[nummer], 'I' });
 			}
             n_variablen += 2;
             break;
@@ -317,7 +317,7 @@ void netzwerk::finde_maschen(std::list<maschenabschnitt> masche)
 
 void netzwerk::berechne_netzwerk()
 {
-    build_matrix();
+	build_matrix();
     std::cout << '\n' << "Gleichungssystem:" << '\n';
     draw_matrix();
     gauss_matrix();
@@ -325,19 +325,47 @@ void netzwerk::berechne_netzwerk()
 
 void netzwerk::draw_matrix()
 {
+	unsigned int *spaltenbreite = new unsigned int[variablen.size() + 1];
+	for (unsigned int i = 0; i < variablen.size() + 1; i++) {
+		spaltenbreite[i] = 6;
+	}
+
+	for (auto it : matrix) {
+		for (unsigned int i = 0; i < n_variablen + 1; i++) {
+			std::stringstream wert;
+			wert << DoubleZuBruchStr(it[i], false);
+			//wert << it[i];
+			if (wert.str().size() > spaltenbreite[i]) {
+				spaltenbreite[i] = wert.str().size();
+			}
+		}
+	}
+
     std::cout << '\n';
-    for (auto it : variablen) {
-        std::cout << it.v_typ << '(' << it.v_teil->get_name() << ')' << '\t';
-    }
+	for (unsigned int i = 0; i < variablen.size(); i++) {
+		std::cout << variablen[i].tostring();
+		for (unsigned int k = variablen[i].tostring().size(); k <= spaltenbreite[i]; k++) {
+			std::cout << ' ';
+		}
+
+	}
     std::cout << '\n';
 
     for (auto it : matrix) {
         for (unsigned int i = 0; i < n_variablen; i++) {
-            std::cout << DoubleZuBruchStr(it[i], false) << '\t';
+			std::stringstream wert;
+			wert << DoubleZuBruchStr(it[i], false);
+			//wert << it[i];
+			std::cout << wert.str();
+			for (unsigned int k = wert.str().size(); k <= spaltenbreite[i]; k++) {
+				std::cout << ' ';
+			}
         }
         std::cout << "| " << DoubleZuBruchStr(it[n_variablen], false) << '\n';
+		//std::cout << "| " << it[n_variablen] << '\n';
     }
     std::cout << '\n';
+	delete[] spaltenbreite;
 }
 
 void netzwerk::gauss_matrix()
@@ -353,28 +381,28 @@ void netzwerk::gauss_matrix()
 
     for (unsigned int ref_zeile = 0, ref_spalte = 0; ref_zeile < kurze_seite; ref_zeile++, ref_spalte++) {
         //Bestimme erste Zeile mit Wert in ref_spalte != 0
-        unsigned int pivot_zeile;
+        unsigned int groesstes_pivot_zeile;
         bool pivot = false;
-        unsigned int test_zeile = ref_zeile;
-        do {
-            if (matrix[test_zeile][ref_spalte] != 0) {
-                pivot_zeile = test_zeile;
-                pivot = true;
-            }
-            test_zeile++;
-        } while (!pivot && test_zeile < matrix.size());
+		for (unsigned int test_zeile = ref_zeile; test_zeile < matrix.size(); test_zeile++) {
+			if (matrix[test_zeile][ref_spalte] != 0) {
+				groesstes_pivot_zeile = test_zeile;
+				pivot = true;
+			}
+		}
 
         if (pivot) {
-            if (pivot_zeile > ref_zeile) {
+            if (groesstes_pivot_zeile > ref_zeile) {
                 //zeilen muessen getauscht werden
-                double *buffer = matrix[pivot_zeile];
-                matrix[pivot_zeile] = matrix[ref_zeile];
+                double *buffer = matrix[groesstes_pivot_zeile];
+                matrix[groesstes_pivot_zeile] = matrix[ref_zeile];
                 matrix[ref_zeile] = buffer;
             }
 
             //variablen unter pivotelement werden null
             for (unsigned int zeile = ref_zeile + 1; zeile < matrix.size(); zeile++) {
                 double faktor = matrix[zeile][ref_spalte] / matrix[ref_zeile][ref_spalte];
+
+				//std::cout << "Z: " << ref_zeile << " S: " << ref_spalte << " Faktor: " << faktor << '\n';		//nur debugging
 
                 for (unsigned int spalte = ref_spalte; spalte < n_variablen + 1; spalte++) {
                     if (spalte == ref_spalte) {
@@ -391,7 +419,6 @@ void netzwerk::gauss_matrix()
             ref_zeile--;
         }
     } //matrix ist jetzt in dreiecksform gebracht
-    //draw_matrix();
 
     //ergebnis ausrechnen (vorsicht trickologie) (ist etwas ausfuerlicher am ende der datei erklaert):
     //erster schritt: freie variablen nach hinten schieben
@@ -524,7 +551,7 @@ void netzwerk::ergebnisausgabe()
             //iteriere ueber alle variablen:
             int zeile = 0;
             for (auto var : variablen) {
-                if (var.v_typ == 'u') {
+                if (var.v_typ == 'U') {
                     var.v_teil->set_volt(matrix[zeile][n_variablen]);
                 }
                 else {
@@ -542,7 +569,7 @@ void netzwerk::ergebnisausgabe()
 			//speichern von freien variablen in jeweiligen strings
 			for (int spalte = n_pivotelemente; spalte < n_variablen; spalte++) {
 				variable it = variablen[spalte];
-				if (it.v_typ == 'u') {
+				if (it.v_typ == 'U') {
 					std::string wert = "U(";
 					wert += it.v_teil->get_name();
 					wert += ')';
@@ -559,24 +586,14 @@ void netzwerk::ergebnisausgabe()
 			for (int zeile = 0; zeile < n_pivotelemente; zeile++) {
 				std::string wert;
 				for (int spalte = n_pivotelemente; spalte < n_variablen; spalte++) {
-					std::string neue_var;
-					if (variablen[spalte].v_typ == 'u') {
-						neue_var += "U(";
-						neue_var += variablen[spalte].v_teil->get_name();
-						neue_var += ')';
-					}
-					else {
-						neue_var += "I(";
-						neue_var += variablen[spalte].v_teil->get_name();
-						neue_var += ')';
-					}
+					std::string neue_var = variablen[spalte].tostring();
 					wert += ergebnis_ergaenzung(neue_var, matrix[zeile][spalte]);
 				}
 				if (wert[0] == '+') {
 					wert[0] = ' ';
 				}
-				//noch probieren variable als double zu bealten, wenn alle freien var == 0 
-				if (variablen[zeile].v_typ == 'u') {
+				//noch probieren variable als double zu behalten, wenn alle freien var == 0 
+				if (variablen[zeile].v_typ == 'U') {
 					if (wert.length() == 0) {
 						variablen[zeile].v_teil->set_volt(matrix[zeile][n_variablen]);
 					}
@@ -598,6 +615,7 @@ void netzwerk::ergebnisausgabe()
 						variablen[zeile].v_teil->set_ampere(wert);
 					}
 				}
+				variablen[zeile].v_teil->berechne();
 			}
 
 			std::cout << '\n' << "Berechnete Werte:" << '\n' << '\n';
@@ -612,6 +630,17 @@ void netzwerk::ergebnisausgabe()
         draw_matrix();
     }
 }
+
+std::string variable::tostring()
+{
+	std::string rueckgabe;
+	rueckgabe += v_typ;
+	rueckgabe += '(';
+	rueckgabe += v_teil->get_name();
+	rueckgabe += ')';
+	return rueckgabe;
+}
+
 
 
 
@@ -636,34 +665,3 @@ void netzwerk::ergebnisausgabe()
 //die anderen arrayeintraege muessen wir nicht mehr veraendern:
 //                                        als arrayzeile: 0   1   4   6   |  -10
 //nun muss x3 auf die selbe weise in x1 (hier nicht dargestellt) eingesetzt werden, dann kann der ganze prozess mit x2 von vorne anfangen.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
