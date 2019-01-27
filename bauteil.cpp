@@ -1,8 +1,7 @@
 #include "bauteil.h"
 
 bauteil::bauteil(std::string &name_, int knoten1_, int knoten2_)
-    :name(name_), knoten1(knoten1_), knoten2(knoten2_),
-     v_known(false), a_known(false), n_known(0)
+    :name(name_), knoten1(knoten1_), knoten2(knoten2_), n_bekannt(0)
 {
 }
 
@@ -12,46 +11,54 @@ bauteil::~bauteil()
 
 void bauteil::set_volt(double wert)
 {
-    volt = wert;
-    if (!v_known) {
-        n_known++;
-        v_known = true;
+    if (!volt.bekannt()) {
+        n_bekannt++;
     }
+    volt = wert;
+}
+
+void bauteil::set_volt(std::string & wert)
+{
+	if (!volt.bekannt()) {
+		n_bekannt++;
+	}
+	volt = wert;
+}
+
+void bauteil::set_volt_frei()
+{
+	volt.status = freie_var;
+}
+
+bool bauteil::volt_frei()
+{
+	return volt.status == freie_var;
 }
 
 void bauteil::set_ampere(double wert)
 {
+    if (!ampere.bekannt()) {
+        n_bekannt++;
+    }
     ampere = wert;
-    if (!a_known) {
-        n_known++;
-        a_known = true;
-    }
 }
 
-double bauteil::get_volt()
+void bauteil::set_ampere(std::string & wert)
 {
-    if (!v_known) {
-        std::cout << "Fehler: unknowne Spannung von Bauteil " << get_name() << " wird gelesen" << '\n';
-    }
-    return volt;
+	if (!ampere.bekannt()) {
+		n_bekannt++;
+	}
+	ampere = wert;
 }
 
-double bauteil::get_ampere()
+void bauteil::set_ampere_frei()
 {
-    if (!a_known) {
-        std::cout << "Fehler: unbekannte Stromstaerke von Bauteil " << get_name() << " wird gelesen" << '\n';
-    }
-    return ampere;
+	ampere.status = freie_var;
 }
 
-bool bauteil::get_v_known()
+bool bauteil::ampere_frei()
 {
-    return v_known;
-}
-
-bool bauteil::get_a_known()
-{
-    return a_known;
+	return ampere.status == freie_var;
 }
 
 std::string bauteil::get_name()
@@ -75,6 +82,12 @@ char bauteil::var_gesucht()
     return '\0';
 }
 
+void bauteil::berechne()
+{
+	//allgemeines bauteil kann nicht bauteil_parameter auseinader berrechnen
+	return;
+}
+
 matrix_elem bauteil::spannung(int knoten)
 {
     std::cout << "Fehler: Bauteil " << get_name() << " ist nicht naeher spezifiziert (widerstand oder quelle)" << '\n';
@@ -94,8 +107,7 @@ void bauteil::print()
 
 
 widerstand::widerstand(std::string &name_, int knoten1_, int knoten2_)
-    :bauteil(name_, knoten1_, knoten2_),
-     o_known(false)
+    :bauteil(name_, knoten1_, knoten2_)
 {
 }
 
@@ -105,66 +117,65 @@ widerstand::~widerstand()
 
 void widerstand::set_ohm(double wert)
 {
+    if (!ohm.bekannt()) {
+        n_bekannt++;
+    }
     ohm = wert;
-    if (!o_known) {
-        n_known++;
-        o_known = true;
-    }
 }
 
-double widerstand::get_ohm()
+void widerstand::set_ohm_frei()
 {
-    if (!o_known) {
-        std::cout << "Fehler: unbekannter Widerstand von Bauteil " << get_name() << " wird gelesen" << '\n';
-    }
-    return ohm;
+	ohm.status = freie_var;
 }
 
-bool widerstand::get_o_known()
+bool widerstand::ohm_frei()
 {
-    return o_known;
+	return ohm.status == freie_var;
 }
 
 char widerstand::var_gesucht()
 {
-    if (n_known == 3) {
-        double delta_ohm = volt / ampere - ohm;
+    if (n_bekannt == 3) {
+        double delta_ohm = volt.d_wert / ampere.d_wert - ohm.d_wert;
         if (!(delta_ohm < 0.001) || !(delta_ohm > -0.001)) {
             std::cout << "Warnung: Widerstand " << get_name() << " hat einen falsch eingegeben Wert. fuer Rechnung wird ohm ignoriert." << '\n';
-            o_known = 0;
+            ohm.status = unbekannt;
         }
         return '\0';                    //es wird keine variable mehr gesucht
     }
-    else if (n_known == 2) {
-        if (!v_known) {
-            set_volt(ohm * ampere);
+    else if (n_bekannt == 2) {
+        if (!volt.bekannt()) {
+            //set_volt(ohm.d_wert * ampere.d_wert);
+			volt = ohm * ampere;
             return '\0';
         }
-        else if (!a_known) {
-            if (ohm != 0) {         //wenn ohm == 0 muss volt auch == 0 sein, dann ist ampere beliebig.
-                set_ampere(volt / ohm);
+        else if (!ampere.bekannt()) {
+            if (ohm.d_wert != 0) {         //wenn ohm == 0 muss volt auch == 0 sein, dann ist ampere beliebig.
+                //set_ampere(volt.d_wert / ohm.d_wert);
+				ampere = volt / ohm;
                 return '\0';
             }
             else {
-                if (volt != 0) {
-                    std::cout << "Fehler: Widerstand " << get_name() << " hat 0 Ohm, aber ein Spannungsabfall != 0 Volt (= " << get_volt() << " Volt)" << '\n';
-                    n_known--;
-                    v_known = false;
+                if (volt.d_wert != 0) {
+                    std::cout << "Fehler: Widerstand " << get_name() << " hat 0 Ohm, aber ein Spannungsabfall != 0 Volt (= " << volt.d_wert << " Volt)" << '\n';
+                    n_bekannt--;
+                    volt.status = unbekannt;
                 }
-                return 'i';
+                return 'I';
             }
         }
         else {
-            set_ohm(volt / ampere);
+            //set_ohm(volt.d_wert / ampere.d_wert);
+			ohm = volt / ampere;
             return '\0';
         }                //dritte variable wurde gerade berechntet -> es wird keine variable mehr gesucht
     }
-    else if (n_known == 1) {
-        if (!v_known) {
-            return 'u';             //volt ist unbekannt -> ampere oder ohm bekannt -> wenn volt per matrix berechnet, kann dritter wert ausgerechnet werden.
+    else if (n_bekannt == 1) {
+        if (!volt.bekannt()) {
+            return 'U';             //volt ist unbekannt -> ampere oder ohm bekannt -> wenn volt per matrix berechnet, kann dritter wert ausgerechnet werden.
         }
         else {
-            return 'i';             //volt ist bekannt -> ampere und ohm sind unbekannt -> ampere wird per matrix berechntet, ohm per ohmschen gesetz spaeter
+            return 'I';             //volt ist bekannt -> ampere und ohm sind unbekannt -> ampere wird per matrix berechntet, ohm per ohmschen gesetz spaeter
         }
     }
     else {
@@ -172,28 +183,43 @@ char widerstand::var_gesucht()
     }
 }
 
+void widerstand::berechne()
+{
+	if (n_bekannt == 2) {
+		if (!volt.bekannt()) {
+			volt = ohm * ampere;
+		}
+		else if (!ampere.bekannt()) {
+			ampere = volt / ohm;
+		}
+		else {	//ohm ist unbekannt
+			ohm = volt / ampere;
+		}
+	}
+}
+
 matrix_elem widerstand::spannung(int knoten)
 {
     matrix_elem ausgabe;
-    if (n_known == 3) {
+    if (n_bekannt == 3) {
         ausgabe.v_typ = '\0';
-        ausgabe.faktor = -volt;
+        ausgabe.faktor = -volt.d_wert;
     }
-    else if (n_known == 2) {
+    else if (n_bekannt == 2) {
         std::cout << "Fehler: matrix muss nach variablen aufgestellt werden (Widerstand " << get_name() << " hat 2 Unbekannte)" << '\n';
     }
-    else if (n_known == 1) {
-        if (v_known) {
+    else if (n_bekannt == 1) {
+        if (volt.bekannt()) {
             ausgabe.v_typ = '\0';
-            ausgabe.faktor = -volt;
+            ausgabe.faktor = -volt.d_wert;
         }
         else {  // volt ist unbekannt -> volt steht in matrix (weil es prioritaet ueber ampere hat, in matrix geschrieben zu werden(siehe var_gesucht()))
-            ausgabe.v_typ = 'u';
+            ausgabe.v_typ = 'U';
             ausgabe.faktor = 1;
         }
     }
-    else {  //n_known == 0
-        ausgabe.v_typ = 'u';
+    else {  //n_bekannt == 0
+        ausgabe.v_typ = 'U';
         ausgabe.faktor = 1;
     }
 
@@ -207,29 +233,29 @@ matrix_elem widerstand::spannung(int knoten)
 matrix_elem widerstand::strom(int knoten)
 {
     matrix_elem ausgabe;
-    if (n_known == 3) {
+    if (n_bekannt == 3) {
         ausgabe.v_typ = '\0';
-        ausgabe.faktor = -ampere;
+        ausgabe.faktor = -ampere.d_wert;
     }
-    else if (n_known == 2) {
+    else if (n_bekannt == 2) {
         std::cout << "Fehler: matrix muss nach variablen aufgestellt werden (Widerstand " << get_name() << " hat 2 Bekannte)" << '\n';
     }
-    else if (n_known == 1) {            //bauteil kommt nur ein mal in variablen<> vor
-        if (a_known) {
-            ausgabe.v_typ = '\0';       //wird in ergebnis geschrieben
-            ausgabe.faktor = -ampere;   //ergebnis andere seite von gleich -> * -1 rechnen
+    else if (n_bekannt == 1) {				//bauteil kommt nur ein mal in variablen<> vor
+        if (ampere.bekannt()) {
+            ausgabe.v_typ = '\0';				//wird in ergebnis geschrieben
+            ausgabe.faktor = -ampere.d_wert;    //ergebnis andere seite von gleich -> * -1 rechnen
         }
-        else if (v_known) {     // 'i' ist dann in variablen<> eingetragen
-            ausgabe.v_typ = 'i';
+        else if (volt.bekannt()) {		// 'I' ist dann in variablen<> eingetragen
+            ausgabe.v_typ = 'I';
             ausgabe.faktor = 1;
         }
-        else {      //nur ohm ist bekannt -> 'u' ist in variablen<> eingetragen
-            ausgabe.v_typ = 'u';
-            ausgabe.faktor = 1 / ohm;
+        else {      //nur ohm ist bekannt -> 'U' ist in variablen<> eingetragen
+            ausgabe.v_typ = 'U';
+            ausgabe.faktor = 1 / ohm.d_wert;
         }
     }
-    else {          //n_known == 0 -> 'u' und 'i' sind in variablen<> eingetragen
-        ausgabe.v_typ = 'i';
+    else {          //n_bekannt == 0 -> 'U' und 'I' sind in variablen<> eingetragen
+        ausgabe.v_typ = 'I';
         ausgabe.faktor = 1;
     }
 
@@ -244,15 +270,24 @@ void widerstand::print()
     std::cout.precision(10);
     std::cout << get_name() << ": " << knoten1 << "->" << knoten2 << '\n';
     //std::cout << "---------" << '\n';
-    if (v_known) {
-        std::cout << "U: " << DoubleZuBruchStr(volt, false) << " Volt" << '\n';
+    if (volt.status == d_bekannt) {
+        std::cout << "U: " << DoubleZuBruchStr(volt.d_wert, false) << " Volt" << '\n';
     }
-    if (a_known) {
-        std::cout << "I: " << DoubleZuBruchStr(ampere, false) << " Ampere" << '\n';
+	else if (volt.status == s_bekannt) {
+		std::cout << "U: " << volt.s_wert << " Volt" << '\n';
+	}
+    if (ampere.status == d_bekannt) {
+        std::cout << "I: " << DoubleZuBruchStr(ampere.d_wert, false) << " Ampere" << '\n';
     }
-    if (o_known) {
-        std::cout << "R: " << DoubleZuBruchStr(ohm, false) << " Ohm" << '\n';
+	else if (ampere.status == s_bekannt) {
+		std::cout << "I: " << ampere.s_wert << " Ampere" << '\n';
+	}
+    if (ohm.status == d_bekannt) {
+        std::cout << "R: " << DoubleZuBruchStr(ohm.d_wert, false) << " Ohm" << '\n';
     }
+	else if (ohm.status == s_bekannt) {
+		std::cout << "R: " << ohm.s_wert << " Ohm" << '\n';
+	}
     std::cout << '\n';
 }
 
@@ -268,14 +303,14 @@ quelle::~quelle()
 
 char quelle::var_gesucht()
 {
-    if (n_known == 0) {
+    if (n_bekannt == 0) {
         return 'b';
     }
-    else if (!v_known) {
-        return 'u';
+    else if (!volt.bekannt()) {
+        return 'U';
     }
-    else if (!a_known) {
-        return 'i';
+    else if (!ampere.bekannt()) {
+        return 'I';
     }
     else {
         return '\0';
@@ -285,12 +320,12 @@ char quelle::var_gesucht()
 matrix_elem quelle::spannung(int knoten)
 {
     matrix_elem ausgabe;
-    if (v_known) {
+    if (volt.bekannt()) {
         ausgabe.v_typ = '\0';
-        ausgabe.faktor = -volt;
+        ausgabe.faktor = -volt.d_wert;
     }
     else {
-        ausgabe.v_typ = 'u';
+        ausgabe.v_typ = 'U';
         ausgabe.faktor = 1;
     }
 
@@ -303,12 +338,12 @@ matrix_elem quelle::spannung(int knoten)
 matrix_elem quelle::strom(int knoten)
 {
     matrix_elem ausgabe;
-    if (a_known) {
+    if (ampere.bekannt()) {
         ausgabe.v_typ = '\0';
-        ausgabe.faktor = -ampere;
+        ausgabe.faktor = -ampere.d_wert;
     }
     else {
-        ausgabe.v_typ = 'i';
+        ausgabe.v_typ = 'I';
         ausgabe.faktor = 1;
     }
 
@@ -323,12 +358,18 @@ void quelle::print()
     std::cout.precision(10);
     std::cout << get_name() << ": " << knoten1 << "->" << knoten2 << '\n';
     //std::cout << "---------" << '\n';
-    if (v_known) {
-        std::cout << "U: " << DoubleZuBruchStr(volt, false) << " Volt" << '\n';
+    if (volt.status == d_bekannt) {
+        std::cout << "U: " << DoubleZuBruchStr(volt.d_wert, false) << " Volt" << '\n';
     }
-    if (a_known) {
-        std::cout << "I: " << DoubleZuBruchStr(ampere, false) << " Ampere" << '\n';
+	else if (volt.status == s_bekannt) {
+		std::cout << "U: " << volt.s_wert << " Volt" << '\n';
+	}
+    if (ampere.status == d_bekannt) {
+        std::cout << "I: " << DoubleZuBruchStr(ampere.d_wert, false) << " Ampere" << '\n';
     }
+	else if (volt.status == s_bekannt) {
+		std::cout << "I: " << ampere.s_wert << " Ampere" << '\n';
+	}
     std::cout << '\n';
 }
 
