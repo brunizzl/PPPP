@@ -169,6 +169,13 @@ bauteil_parameter bauteil_parameter::operator/(const bauteil_parameter & divisor
 }
 
 
+bool bauteil_parameter::addition(std::string & testausdruck)
+{
+	//idee: wenn plus oder minus gefunden wird false, bei minus vorher noch testen, ob nur vorzeichen (klammer auf davor)
+	///////////////////////////////muss noch geschrieben werden
+	return false;
+}
+
 bauteil_parameter::bauteil_parameter(double d_wert)
 	:d_wert(d_wert), status(d_bekannt)
 {

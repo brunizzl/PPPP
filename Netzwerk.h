@@ -56,7 +56,7 @@ public:
     netzwerk();
     ~netzwerk();
 
-    void build_netzwerk();      //liest netzwerk aus datei ein
+    bool build_netzwerk();      //liest netzwerk aus datei ein (rueckgabe == erfolg datei einlesen)
     void berechne_netzwerk();   //macht den ganzen matrixdreck
 
     void draw_matrix();         //debuggingfunktion, die matrix darstellt

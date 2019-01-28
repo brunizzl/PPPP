@@ -16,6 +16,8 @@ enum parameter_status {
 
 class bauteil_parameter
 {
+private:
+	bool addition(std::string &testausdruck);
 public:
 	double d_wert;
 	std::string s_wert;

@@ -50,12 +50,13 @@ quelle *netzwerk::add_quelle(std::string &name, int knoten1, int knoten2)
     return neu;                             //rueckgabe ist pointer auf neue quelle
 }
 
-void netzwerk::build_netzwerk()
+bool netzwerk::build_netzwerk()
 {
     std::ifstream datei("netzwerk.txt");
 
     if (!datei) {
         std::cout << "Fehler: Datei netzwerk.txt befindet sich nicht in diesem Verzeichnis." << '\n';
+		return false;
     }
     else {
         std::cout << "Lese aus netzwerk.txt ein:" << '\n' << '\n';
@@ -161,6 +162,7 @@ void netzwerk::build_netzwerk()
                 break;                  //erlaubt es in die selbe datei noch alte netzwerke und/ oder eine bedienungsanleitung zu schreiben
             }
         }
+		return true;
     }
 }
 
@@ -343,8 +345,12 @@ void netzwerk::draw_matrix()
 
     std::cout << '\n';
 	for (unsigned int i = 0; i < variablen.size(); i++) {
-		std::cout << variablen[i].tostring();
-		for (unsigned int k = variablen[i].tostring().size(); k <= spaltenbreite[i]; k++) {
+		std::string var_name = variablen[i].tostring();
+		std::cout << var_name;
+		if (var_name.size() > spaltenbreite[i]) {
+			spaltenbreite[i] = var_name.size();
+		}
+		for (unsigned int k = var_name.size(); k <= spaltenbreite[i]; k++) {
 			std::cout << ' ';
 		}
 
@@ -421,6 +427,7 @@ void netzwerk::gauss_matrix()
             ref_zeile--;
         }
     } //matrix ist jetzt in dreiecksform gebracht
+	draw_matrix();
 
     //ergebnis ausrechnen (vorsicht trickologie) (ist etwas ausfuerlicher am ende der datei erklaert):
     //erster schritt: freie variablen nach hinten schieben
@@ -433,6 +440,9 @@ void netzwerk::gauss_matrix()
     for (unsigned int zeile = 0; zeile < n_variablen && zeile < matrix.size(); zeile++) {
         unsigned int spalte = 0;
         while (abs(matrix[zeile][spalte]) < 1e-15) {		//absicherung gegen rundungsfehler
+			if (matrix[zeile][spalte] != 0) {
+				std::cout << "Warnung: Wert in Z" << zeile + 1 << " S" << spalte + 1 << " = " << matrix[zeile][spalte] << " wird als == 0 angenommen\n";
+			}
             spalte++;
         }
         if (spalte < n_variablen) {
@@ -511,9 +521,12 @@ void netzwerk::spaltentausch(int spalte1, int spalte2)
 
 bool netzwerk::ergebnis()
 {
-    for (int zeile = n_pivotelemente; zeile < matrix.size(); zeile++) {
+    for (unsigned int zeile = n_pivotelemente; zeile < matrix.size(); zeile++) {
         double wert = matrix[zeile][variablen.size()];
-        if (wert > 0.001 || wert < -0.001) {
+        if (abs(wert) > 1e-10) {
+			if (wert != 0) {
+				std::cout << "Warnung: Wert in Z" << zeile + 1 << " S" << variablen.size() + 1 << " (Ergebnisspalte) = " << wert << " wird als == 0 angenommen\n";
+			}
             return false;
         }
     }
@@ -547,7 +560,7 @@ std::string netzwerk::ergebnis_ergaenzung(std::string & neue_var, double faktor)
 
 void netzwerk::ergebnisausgabe()
 {
-	draw_matrix();
+	//draw_matrix();
     if (ergebnis()) {
         if (n_variablen == n_pivotelemente) {
             //iteriere ueber alle variablen:
@@ -569,7 +582,7 @@ void netzwerk::ergebnisausgabe()
         }
         else {
 			//speichern von freien variablen in jeweiligen strings
-			for (int spalte = n_pivotelemente; spalte < n_variablen; spalte++) {
+			for (unsigned int spalte = n_pivotelemente; spalte < n_variablen; spalte++) {
 				variable it = variablen[spalte];
 				if (it.v_typ == 'U') {
 					std::string wert = "U(";
@@ -585,9 +598,9 @@ void netzwerk::ergebnisausgabe()
 				}
 			}
 			//speichern der abhängigen variablen in jeweiligen strings (wie in matrixrechner)
-			for (int zeile = 0; zeile < n_pivotelemente; zeile++) {
+			for (unsigned int zeile = 0; zeile < n_pivotelemente; zeile++) {
 				std::string wert;
-				for (int spalte = n_pivotelemente; spalte < n_variablen; spalte++) {
+				for (unsigned int spalte = n_pivotelemente; spalte < n_variablen; spalte++) {
 					std::string neue_var = variablen[spalte].tostring();
 					wert += ergebnis_ergaenzung(neue_var, matrix[zeile][spalte]);
 				}

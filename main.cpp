@@ -6,9 +6,10 @@
 int main()
 {
     netzwerk Netzwerk;
-    Netzwerk.build_netzwerk();
-    Netzwerk.berechne_netzwerk();
-	Netzwerk.ergebnisausgabe();
+	if (Netzwerk.build_netzwerk()) {
+		Netzwerk.berechne_netzwerk();
+		Netzwerk.ergebnisausgabe();
+	}
     std::cin.get();
     return 0;
 }
