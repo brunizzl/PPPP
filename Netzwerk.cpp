@@ -441,7 +441,7 @@ void netzwerk::gauss_matrix()
         unsigned int spalte = 0;
         while (abs(matrix[zeile][spalte]) < 1e-15) {		//absicherung gegen rundungsfehler
 			if (matrix[zeile][spalte] != 0) {
-				std::cout << "Warnung: Wert in Z" << zeile + 1 << " S" << spalte + 1 << " = " << matrix[zeile][spalte] << " wird als == 0 angenommen\n";
+				std::cout << "Warnung: Wert in Z" << zeile + 1 << " S" << spalte + 1 << "\t= " << matrix[zeile][spalte] << " wird als == 0 angenommen\n";
 			}
             spalte++;
         }
@@ -542,18 +542,15 @@ std::string netzwerk::ergebnis_ergaenzung(std::string & neue_var, double faktor)
 	else if (faktor == 1) {
 		rueckgabe.push_back('+');
 		rueckgabe += neue_var;
-		rueckgabe.push_back(' ');
 	}
 	else if (faktor == -1) {
 		rueckgabe.push_back('-');
 		rueckgabe += neue_var;
-		rueckgabe.push_back(' ');
 	}
 	else {
 		rueckgabe += DoubleZuBruchStr(faktor, true);
 		rueckgabe.push_back('*');
 		rueckgabe += neue_var;
-		rueckgabe.push_back(' ');
 	}
 	return rueckgabe;
 }
@@ -584,17 +581,15 @@ void netzwerk::ergebnisausgabe()
 			//speichern von freien variablen in jeweiligen strings
 			for (unsigned int spalte = n_pivotelemente; spalte < n_variablen; spalte++) {
 				variable it = variablen[spalte];
+				std::string wert = it.tostring();
 				if (it.v_typ == 'U') {
-					std::string wert = "U(";
-					wert += it.v_teil->get_name();
-					wert += ')';
 					it.v_teil->set_volt(wert);
 				}
-				else {
-					std::string wert = "I(";
-					wert += it.v_teil->get_name();
-					wert += ')';
+				else if (it.v_typ == 'I') {
 					it.v_teil->set_ampere(wert);
+				}
+				else {
+					std::cout << "Fehler: in ergebnisausgabe: it.v_typ == " << it.v_typ << " (erwarte 'U' oder 'I')\n";
 				}
 			}
 			//speichern der abhängigen variablen in jeweiligen strings (wie in matrixrechner)
@@ -605,7 +600,7 @@ void netzwerk::ergebnisausgabe()
 					wert += ergebnis_ergaenzung(neue_var, matrix[zeile][spalte]);
 				}
 				if (wert[0] == '+') {
-					wert[0] = ' ';
+					wert.erase(0, 1);
 				}
 				//noch probieren variable als double zu behalten, wenn alle freien var == 0 
 				if (variablen[zeile].v_typ == 'U') {
@@ -650,9 +645,9 @@ std::string variable::tostring()
 {
 	std::string rueckgabe;
 	rueckgabe += v_typ;
-	rueckgabe += '(';
+	rueckgabe += '[';
 	rueckgabe += v_teil->get_name();
-	rueckgabe += ')';
+	rueckgabe += ']';
 	return rueckgabe;
 }
 

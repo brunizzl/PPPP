@@ -21,13 +21,15 @@ bauteil_parameter bauteil_parameter::operator+(const bauteil_parameter & summand
 			rueckgabe.s_wert = this->s_wert;
 		}
 		else {
-			rueckgabe.s_wert += '+';
 			rueckgabe.s_wert += '(';
 			rueckgabe.s_wert = DoubleZuBruchStr(this->d_wert, false);
 			rueckgabe.s_wert += ')';
 		}
 
 		if (summand2.status == s_bekannt) {
+			if (summand2.s_wert[0] != '-') {
+				rueckgabe.s_wert += '+';
+			}
 			rueckgabe.s_wert += summand2.s_wert;
 		}
 		else if (summand2.d_wert != 0) {
@@ -56,7 +58,6 @@ bauteil_parameter bauteil_parameter::operator-(const bauteil_parameter & subtrak
 			rueckgabe.s_wert = this->s_wert;
 		}
 		else {
-			rueckgabe.s_wert += '+';
 			rueckgabe.s_wert += '(';
 			rueckgabe.s_wert = DoubleZuBruchStr(this->d_wert, false);
 			rueckgabe.s_wert += ')';
@@ -91,13 +92,11 @@ bauteil_parameter bauteil_parameter::operator*(const bauteil_parameter & faktor2
 		rueckgabe.status = s_bekannt;
 
 		if (this->status == s_bekannt) {
-			rueckgabe.s_wert = '+';
 			rueckgabe.s_wert += '(';
 			rueckgabe.s_wert += this->s_wert;
 			rueckgabe.s_wert += ')';
 		}
 		else {
-			rueckgabe.s_wert += '+';
 			rueckgabe.s_wert += '(';
 			rueckgabe.s_wert = DoubleZuBruchStr(this->d_wert, false);
 			rueckgabe.s_wert += ')';
@@ -135,13 +134,11 @@ bauteil_parameter bauteil_parameter::operator/(const bauteil_parameter & divisor
 		rueckgabe.status = s_bekannt;
 
 		if (this->status == s_bekannt) {
-			rueckgabe.s_wert = '+';
 			rueckgabe.s_wert += '(';
 			rueckgabe.s_wert += this->s_wert;
 			rueckgabe.s_wert += ')';
 		}
 		else {
-			rueckgabe.s_wert += '+';
 			rueckgabe.s_wert += '(';
 			rueckgabe.s_wert = DoubleZuBruchStr(this->d_wert, false);
 			rueckgabe.s_wert += ')';
