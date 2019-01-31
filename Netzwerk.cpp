@@ -118,6 +118,7 @@ bool netzwerk::build_netzwerk()
                     }
                 }
                 neu->print();
+				neu->berechne();
             }
             else if (zeile.find("quelle") != std::string::npos) {
                 zeile.erase(0, 7);      //loesche das wort "quelle " inklusive erstes leerzeichen

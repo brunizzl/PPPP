@@ -2,7 +2,7 @@
 
 quelle 		q1 	1	2	u= frei
 
-widerstand 	R1	1	3	u= frei
+widerstand 	R1	1	3	r= 30
 widerstand	R2	3	2	r= 120
 widerstand	R3	3	2	r= 60
 widerstand	R4	3	2	r= 40
@@ -18,6 +18,18 @@ widerstand 	w3 	3 	4 	r= 0.3
 
 quelle 		v1 	2 	3 	u= 3 i= -2
 quelle 		i1 	1 	4 	i= 7 u= frei
+
+ende
+
+quelle 		Q1	2	1	u= 10
+
+widerstand 	R1	2	3	r= 100
+widerstand	R2	3	1	r= 150
+widerstand	R3	2	4	r= 200
+widerstand 	R4	4	1	r= 250
+widerstand	R5	3	4	r= 1700
+
+
 
 ende
 

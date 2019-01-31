@@ -1,7 +1,19 @@
 #include "bauteil.h"
 
+int bauteil::n_bekannt()
+{
+	int rueckgabe = 0;
+	if (volt.bekannt()) {
+		rueckgabe++;
+	}
+	if (ampere.bekannt()) {
+		rueckgabe++;
+	}
+	return rueckgabe;
+}
+
 bauteil::bauteil(std::string &name_, int knoten1_, int knoten2_)
-    :name(name_), knoten1(knoten1_), knoten2(knoten2_), n_bekannt(0)
+    :name(name_), knoten1(knoten1_), knoten2(knoten2_)
 {
 }
 
@@ -11,17 +23,11 @@ bauteil::~bauteil()
 
 void bauteil::set_volt(double wert)
 {
-    if (!volt.bekannt()) {
-        n_bekannt++;
-    }
     volt = wert;
 }
 
 void bauteil::set_volt(std::string & wert)
 {
-	if (!volt.bekannt()) {
-		n_bekannt++;
-	}
 	volt = wert;
 }
 
@@ -37,17 +43,11 @@ bool bauteil::volt_frei()
 
 void bauteil::set_ampere(double wert)
 {
-    if (!ampere.bekannt()) {
-        n_bekannt++;
-    }
     ampere = wert;
 }
 
 void bauteil::set_ampere(std::string & wert)
 {
-	if (!ampere.bekannt()) {
-		n_bekannt++;
-	}
 	ampere = wert;
 }
 
@@ -106,6 +106,21 @@ void bauteil::print()
 }
 
 
+int widerstand::n_bekannt()
+{
+	int rueckgabe = 0;
+	if (ampere.bekannt()) {
+		rueckgabe++;
+	}
+	if (volt.bekannt()) {
+		rueckgabe++;
+	}
+	if (ohm.bekannt()) {
+		rueckgabe++;
+	}
+	return rueckgabe;
+}
+
 widerstand::widerstand(std::string &name_, int knoten1_, int knoten2_)
     :bauteil(name_, knoten1_, knoten2_)
 {
@@ -117,9 +132,6 @@ widerstand::~widerstand()
 
 void widerstand::set_ohm(double wert)
 {
-    if (!ohm.bekannt()) {
-        n_bekannt++;
-    }
     ohm = wert;
 }
 
@@ -135,15 +147,15 @@ bool widerstand::ohm_frei()
 
 char widerstand::var_gesucht()
 {
-    if (n_bekannt == 3) {
-        double delta_ohm = volt.d_wert / ampere.d_wert - ohm.d_wert;
-        if (!(delta_ohm < 0.001) || !(delta_ohm > -0.001)) {
+    if (n_bekannt() == 3) {
+        double delta_volt = ohm.d_wert * ampere.d_wert - volt.d_wert;
+        if (abs(delta_volt) > 1e-10) {
             std::cout << "Warnung: Widerstand " << get_name() << " hat einen falsch eingegeben Wert. fuer Rechnung wird ohm ignoriert." << '\n';
-            ohm.status = unbekannt;
+			ohm.d_wert = volt.d_wert / ampere.d_wert;
         }
         return '\0';                    //es wird keine variable mehr gesucht
     }
-    else if (n_bekannt == 2) {
+    else if (n_bekannt() == 2) {
         if (!volt.bekannt()) {
             //set_volt(ohm.d_wert * ampere.d_wert);
 			volt = ohm * ampere;
@@ -158,7 +170,6 @@ char widerstand::var_gesucht()
             else {
                 if (volt.d_wert != 0) {
                     std::cout << "Fehler: Widerstand " << get_name() << " hat 0 Ohm, aber ein Spannungsabfall != 0 Volt (= " << volt.d_wert << " Volt)" << '\n';
-                    n_bekannt--;
                     volt.status = unbekannt;
                 }
                 return 'I';
@@ -170,7 +181,7 @@ char widerstand::var_gesucht()
             return '\0';
         }                //dritte variable wurde gerade berechntet -> es wird keine variable mehr gesucht
     }
-    else if (n_bekannt == 1) {
+    else if (n_bekannt() == 1) {
         if (!volt.bekannt()) {
             return 'U';             //volt ist unbekannt -> ampere oder ohm bekannt -> wenn volt per matrix berechnet, kann dritter wert ausgerechnet werden.
         }
@@ -185,7 +196,7 @@ char widerstand::var_gesucht()
 
 void widerstand::berechne()
 {
-	if (n_bekannt == 2) {
+	if (n_bekannt() == 2) {
 		if (!volt.bekannt()) {
 			volt = ohm * ampere;
 		}
@@ -201,14 +212,14 @@ void widerstand::berechne()
 matrix_elem widerstand::spannung(int knoten)
 {
     matrix_elem ausgabe;
-    if (n_bekannt == 3) {
+    if (n_bekannt() == 3) {
         ausgabe.v_typ = '\0';
         ausgabe.faktor = -volt.d_wert;
     }
-    else if (n_bekannt == 2) {
+    else if (n_bekannt() == 2) {
         std::cout << "Fehler: matrix muss nach variablen aufgestellt werden (Widerstand " << get_name() << " hat 2 Unbekannte)" << '\n';
     }
-    else if (n_bekannt == 1) {
+    else if (n_bekannt() == 1) {
         if (volt.bekannt()) {
             ausgabe.v_typ = '\0';
             ausgabe.faktor = -volt.d_wert;
@@ -233,14 +244,14 @@ matrix_elem widerstand::spannung(int knoten)
 matrix_elem widerstand::strom(int knoten)
 {
     matrix_elem ausgabe;
-    if (n_bekannt == 3) {
+    if (n_bekannt() == 3) {
         ausgabe.v_typ = '\0';
         ausgabe.faktor = -ampere.d_wert;
     }
-    else if (n_bekannt == 2) {
+    else if (n_bekannt() == 2) {
         std::cout << "Fehler: matrix muss nach variablen aufgestellt werden (Widerstand " << get_name() << " hat 2 Bekannte)" << '\n';
     }
-    else if (n_bekannt == 1) {				//bauteil kommt nur ein mal in variablen<> vor
+    else if (n_bekannt() == 1) {				//bauteil kommt nur ein mal in variablen<> vor
         if (ampere.bekannt()) {
             ausgabe.v_typ = '\0';				//wird in ergebnis geschrieben
             ausgabe.faktor = -ampere.d_wert;    //ergebnis andere seite von gleich -> * -1 rechnen
@@ -271,19 +282,19 @@ void widerstand::print()
     std::cout << get_name() << ": " << knoten1 << "->" << knoten2 << '\n';
     //std::cout << "---------" << '\n';
     if (volt.status == d_bekannt) {
-        std::cout << "U: " << DoubleZuBruchStr(volt.d_wert, false) << " Volt" << '\n';
+		std::cout << "U: " << DoubleZuBruchStr(volt.d_wert, false) << " Volt" << '\n';
     }
 	else if (volt.status == s_bekannt) {
 		std::cout << "U: " << volt.s_wert << " Volt" << '\n';
 	}
     if (ampere.status == d_bekannt) {
-        std::cout << "I: " << DoubleZuBruchStr(ampere.d_wert, false) << " Ampere" << '\n';
+		std::cout << "I: " << DoubleZuBruchStr(ampere.d_wert, false) << " Ampere" << '\n';
     }
 	else if (ampere.status == s_bekannt) {
 		std::cout << "I: " << ampere.s_wert << " Ampere" << '\n';
 	}
     if (ohm.status == d_bekannt) {
-        std::cout << "R: " << DoubleZuBruchStr(ohm.d_wert, false) << " Ohm" << '\n';
+		std::cout << "R: " << DoubleZuBruchStr(ohm.d_wert, false) << " Ohm" << '\n';
     }
 	else if (ohm.status == s_bekannt) {
 		std::cout << "R: " << ohm.s_wert << " Ohm" << '\n';
@@ -303,7 +314,7 @@ quelle::~quelle()
 
 char quelle::var_gesucht()
 {
-    if (n_bekannt == 0) {
+    if (n_bekannt() == 0) {
         return 'b';
     }
     else if (!volt.bekannt()) {

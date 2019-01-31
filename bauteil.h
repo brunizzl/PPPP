@@ -24,7 +24,7 @@ protected:
     int knoten2;					//verknuepfungspunkt2
     bauteil_parameter volt;         //wie viel volt fallen ueber bauteil ab
     bauteil_parameter ampere;       //vie viel ampere fliessen duch bauteil
-    int  n_bekannt;					//zaehlt, wie viel variablen insgesamt unbekannt sind
+	virtual int n_bekannt();		//zaehlt, wie viel variablen insgesamt unbekannt sind
 
 public:
     bauteil(std::string &name_, int knoten1_, int knoten2_);
@@ -56,6 +56,7 @@ class widerstand : public bauteil
 {
 protected:
     bauteil_parameter ohm;         //analog zu volt und ampere in basisklasse
+	int n_bekannt() override;
 
 public:
     widerstand(std::string &name_, int knoten1_, int knoten2_);

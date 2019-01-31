@@ -67,8 +67,13 @@ std::string DoubleZuBruchStr(double wert, bool showpos) {
     const int fehler = 1000;
     std::pair<int, int> bruch = dtoB(wert, fehler);
     std::string ausgabe;
-
-    if ((bruch.second > fehler*(-1) && bruch.second < fehler) && (bruch.first < 100 || bruch.second < 100)) {
+	//wenn 0-> soll double ausgeben
+	if ((bruch.first == 0 || bruch.second == 0) && abs(wert) > 1e-15) {
+		std::stringstream stream;
+		stream << wert;
+		stream >> ausgabe;
+	}
+    else if ((bruch.second > fehler*(-1) && bruch.second < fehler) && (bruch.first < 100 || bruch.second < 100)) {
 
         std::ostringstream str1;
         if (showpos) {
