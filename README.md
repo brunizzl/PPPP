@@ -25,14 +25,3 @@ Das Programm laeuft um das zu bewerkstelligen am ersten Bauteil los (das muss al
 Der Naechste Schritt ist das gaussen der Matrix, sowie die Berechnung der in der Matrix vorkommenden Variablen. Diese Können dann zur Berechnung der restlichen Unbekannten genutzt werden.
 
 Am Ende werden die Ergebnisse auf der Konsole ausgegeben.
-
-Leistungsmerkmale:
-	- Einlesen von Netzwerk aus Datei  *
-	- Verwaltung von Netzwerk als Graph ***
-	- Finden der Maschen in eingelesenem Netzwerk ***
-	- Aufstellen einer Matrix aus Maschengleichungen und Knotengleichungen **
-	- Gaussen der Matrix **
-	- Berrechnen der Variablen der Matrix, wenn notwendig in Abhaengigkeit von freien Variablen ***
-	- Berechnen der restlichen Unbekannten **
-(Sterne sind geschaetzter Schwierigkeitgrad / Arbeitsaufwand von 1 (leicht) bist 3 (schwer))
-
